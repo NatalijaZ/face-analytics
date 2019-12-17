@@ -1,0 +1,30 @@
+{
+  "name": "typescript-runtime-template",
+  "scripts": {
+    "start": "node -r dotenv/config -r ts-node/register -r tsconfig-paths/register src/App.ts",
+    "serve": "nodemon -e src/**/*.ts --exec \"npm start\"",
+    "runtime": "pm2-runtime ecosystem.config.js",
+    "debug": "node --inspect-brk=10001 -r dotenv/config -r ts-node/register -r tsconfig-paths/register src/App.ts",
+    "build": "tsc --outDir dist/",
+    "test": "mocha -r dotenv/config -r ts-node/register -r tsconfig-paths/register -p tsconfig.json tests/**/*.spec.ts --exit",
+    "lint": "eslint --fix src/**/*.ts"
+  },
+  "dependencies": {
+    "@types/node": "^12.12.17",
+    "dotenv": "^8.2.0",
+    "pm2": "^4.2.1",
+    "ts-node": "^8.5.4",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.7.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.7",
+    "@types/mocha": "^5.2.7",
+    "@typescript-eslint/eslint-plugin": "^2.11.0",
+    "@typescript-eslint/parser": "^2.11.0",
+    "chai": "^4.2.0",
+    "eslint": "^6.7.2",
+    "mocha": "^6.2.2",
+    "nodemon": "^2.0.2"
+  }
+}
