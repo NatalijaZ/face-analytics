@@ -10,9 +10,12 @@
     "lint": "eslint --fix src/**/*.ts"
   },
   "dependencies": {
+    "@tensorflow/tfjs-node": "^1.4.0",
     "@types/joi": "^14.3.4",
     "@types/node": "^12.12.17",
+    "canvas": "^2.6.1",
     "dotenv": "^8.2.0",
+    "face-api.js": "^0.22.0",
     "joi": "^14.3.1",
     "pm2": "^4.2.1",
     "ts-node": "^8.5.4",
