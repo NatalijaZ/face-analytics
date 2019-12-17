@@ -6,6 +6,7 @@ import { GrabberWorkerImpl } from '@/workers/GrabberWorkerImpl';
 import Joi, { ValidationError } from 'joi';
 import { Promisify } from './utils/Promisify';
 import { NamedValidateError } from './exceptions/NamedValidateError';
+import { FaceAnalyticsManager } from './managers/FaceAnalyticsManager';
 
 @Service(FaceAnalyticsApplication.name)
 export class FaceAnalyticsApplication {
@@ -13,6 +14,8 @@ export class FaceAnalyticsApplication {
   private fileGrabber!: FileGrabber
   @Inject(GrabberWorkerImpl.name)
   private grabWorker!: GrabberWorker
+  @Inject(FaceAnalyticsManager.name)
+  private faceAnalyticsManager!: FaceAnalyticsManager
 
   constructor () {
     let errorMessage: ValidationError | null = null;
@@ -27,7 +30,9 @@ export class FaceAnalyticsApplication {
       throw new NamedValidateError('GRAB_TIMEOUT', errorMessage.message);
   }
 
-  public start () {
+  public async start () {
+    await this.faceAnalyticsManager.prepare();
+
     const grabTimeout = Number(process.env.GRAB_TIMEOUT);
     const threadCount = Number(process.env.THREAD_COUNT);
 
@@ -35,12 +40,14 @@ export class FaceAnalyticsApplication {
       .from({ length: threadCount }, (_, i) => this.tasksQueue(i + 1))
       .forEach(async it => {
         let task: IteratorResult<string, string>;
+
         while (!(task = it.next()).done) {
-          // TODO processing
-          // -- test --
-          await Promisify.later(() => console.log(task.value), grabTimeout);
-          // -- test --
+          await Promisify.later(async () => {
+            const analysis = await this.faceAnalyticsManager.analyse(task.value);
+            console.log(analysis);
+          }, grabTimeout);
         }
+        
       });
   }
 

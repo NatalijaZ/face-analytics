@@ -1,9 +1,11 @@
+// import '@tensorflow/tfjs-node';
+
 import Container from 'typedi';
 import { FaceAnalyticsApplication } from '@/FaceAnalyticsApplication';
 
-function main () {
+async function main () {
   const application = Container.get(FaceAnalyticsApplication);
-  application.start();
+  await application.start();
 }
 
 main();
