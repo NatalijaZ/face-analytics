@@ -1,8 +1,9 @@
-import { getName } from '@/Module';
+import Container from 'typedi';
+import { FaceAnalyticsApplication } from '@/FaceAnalyticsApplication';
 
 function main () {
-  /* entry point */
-  console.log(`Hello world, ${getName()}`);
+  const application = Container.get(FaceAnalyticsApplication);
+  application.start();
 }
 
 main();
