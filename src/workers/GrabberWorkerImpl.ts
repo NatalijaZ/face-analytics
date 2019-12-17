@@ -3,6 +3,7 @@ import { GrabberWorker } from './GrabberWorker';
 import Joi, { ValidationError } from 'joi';
 import { Logger } from '@/utils/Logger';
 import Exec from 'child_process';
+import { NamedValidateError } from '@/exceptions/NamedValidateError';
 
 @Service(GrabberWorkerImpl.name)
 export class GrabberWorkerImpl implements GrabberWorker {
@@ -10,10 +11,10 @@ export class GrabberWorkerImpl implements GrabberWorker {
     let errorMessage: ValidationError | null = null;
 
     if ((errorMessage = Joi.string().validate(process.env.DATASET_ROOT_FOLDER).error))
-      throw new Error(errorMessage.message);
+      throw new NamedValidateError('DATASET_ROOT_FOLDER', errorMessage.message);
 
     if ((errorMessage = Joi.string().validate(process.env.USER_AGENT).error))
-      throw new Error(errorMessage.message);
+      throw new NamedValidateError('USER_AGENT', errorMessage.message);
   }
 
   *grab (url: URL, limit: number, threadIdentificator: string = '1_'): IterableIterator<string> {

@@ -5,6 +5,7 @@ import { GrabberWorker } from '@/workers/GrabberWorker';
 import { GrabberWorkerImpl } from '@/workers/GrabberWorkerImpl';
 import Joi, { ValidationError } from 'joi';
 import { Promisify } from './utils/Promisify';
+import { NamedValidateError } from './exceptions/NamedValidateError';
 
 @Service(FaceAnalyticsApplication.name)
 export class FaceAnalyticsApplication {
@@ -17,10 +18,13 @@ export class FaceAnalyticsApplication {
     let errorMessage: ValidationError | null = null;
 
     if ((errorMessage = Joi.number().positive().validate(process.env.DATASET_THREAD_SIZE).error))
-      throw new Error(errorMessage.message);
+      throw new NamedValidateError('DATASET_THREAD_SIZE', errorMessage.message);
 
     if ((errorMessage = Joi.number().positive().validate(process.env.THREAD_COUNT).error))
-      throw new Error(errorMessage.message);
+      throw new NamedValidateError('THREAD_COUNT', errorMessage.message);
+
+    if ((errorMessage = Joi.number().positive().validate(process.env.GRAB_TIMEOUT).error))
+      throw new NamedValidateError('GRAB_TIMEOUT', errorMessage.message);
   }
 
   public start () {
@@ -31,7 +35,7 @@ export class FaceAnalyticsApplication {
         while (!(task = it.next()).done) {
           // TODO processing
           // -- test --
-          await Promisify.later(() => console.log(task.value), 5000);
+          await Promisify.later(() => console.log(task.value), Number(process.env.GRAB_TIMEOUT));
           // -- test --
         }
       });
