@@ -29,7 +29,7 @@ export class FaceAnalyticsApplication {
 
   public start () {
     Array
-      .from({ length: Number(process.env.THREAD_COUNT) }, (_, i) => this.tasksQueue(i))
+      .from({ length: Number(process.env.THREAD_COUNT) }, (_, i) => this.tasksQueue(i + 1))
       .forEach(async it => {
         let task: IteratorResult<string, string>;
         while (!(task = it.next()).done) {
