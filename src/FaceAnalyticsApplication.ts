@@ -28,14 +28,17 @@ export class FaceAnalyticsApplication {
   }
 
   public start () {
+    const grabTimeout = Number(process.env.GRAB_TIMEOUT);
+    const threadCount = Number(process.env.THREAD_COUNT);
+
     Array
-      .from({ length: Number(process.env.THREAD_COUNT) }, (_, i) => this.tasksQueue(i + 1))
+      .from({ length: threadCount }, (_, i) => this.tasksQueue(i + 1))
       .forEach(async it => {
         let task: IteratorResult<string, string>;
         while (!(task = it.next()).done) {
           // TODO processing
           // -- test --
-          await Promisify.later(() => console.log(task.value), Number(process.env.GRAB_TIMEOUT));
+          await Promisify.later(() => console.log(task.value), grabTimeout);
           // -- test --
         }
       });
