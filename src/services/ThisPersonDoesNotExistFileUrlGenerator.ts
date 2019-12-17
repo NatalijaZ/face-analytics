@@ -1,9 +1,9 @@
-import { FileGrabber } from '@/grabbers/FileGrabber';
+import { FileGrabber } from '@/services/FileUrlGenerator';
 import Joi, { ValidationError } from 'joi';
 import { Service } from 'typedi';
 
-@Service(ThisPersonDoesNotExistImageGrabber.name)
-export class ThisPersonDoesNotExistImageGrabber implements FileGrabber {
+@Service(ThisPersonDoesNotExistFileUrlGenerator.name)
+export class ThisPersonDoesNotExistFileUrlGenerator implements FileGrabber {
   constructor () {
     let errorMessage: ValidationError | null = null;
 
