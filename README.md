@@ -1,11 +1,11 @@
-# typescript-runtime-template
+# gan-face-analytics
 
 The project template for quick build TypeScript-runtime application
 
 ## Project setup
 ```
 # clone this repository
-git clone https://github.com/nionoku/typescript-runtime-template.git
+git clone https://github.com/nionoku/gan-face-analytics.git
 
 # change git remote to your repository
 git remote set-url origin https://github.com/your-profile/your-project-name.git
