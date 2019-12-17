@@ -10,11 +10,14 @@
     "lint": "eslint --fix src/**/*.ts"
   },
   "dependencies": {
+    "@types/joi": "^14.3.4",
     "@types/node": "^12.12.17",
     "dotenv": "^8.2.0",
+    "joi": "^14.3.1",
     "pm2": "^4.2.1",
     "ts-node": "^8.5.4",
     "tsconfig-paths": "^3.9.0",
+    "typedi": "^0.8.0",
     "typescript": "^3.7.3"
   },
   "devDependencies": {
