@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name: 'typescript-runtime-template',
+    name: 'face-analytics',
     script: 'src/App.ts',
     interpreter: 'node',
     interpreter_args: [
