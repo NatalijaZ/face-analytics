@@ -27,16 +27,17 @@ export class FaceAnalyticsManager {
     await FaceAPI.nets.ageGenderNet.loadFromDisk(process.env.WEIGHT_FOLDER);
   }
 
-  public async analyse (filepath: string): Promise<FaceAnalyticsResult> {
+  public async analyse (filepath: string): Promise<FaceAnalyticsResult[]> {
     const img = await this.canvas.loadImage(filepath);
-    const result = await FaceAPI.detectSingleFace(img, this.faceDetectionNetworkOptions)
+    const result = await FaceAPI.detectAllFaces(img, this.faceDetectionNetworkOptions)
       .withAgeAndGender()
       .withFaceExpressions();
 
-    return {
-      gender: result!.gender,
-      age: result!.age,
-      expression: result!.expressions
-    };
+    return result.map(it => ({
+      image: filepath,
+      gender: it.gender,
+      age: it.age,
+      expression: it.expressions
+    }));
   }
 }

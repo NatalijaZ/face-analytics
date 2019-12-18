@@ -1,4 +1,5 @@
 export interface FaceAnalyticsResult {
+  image: string
   gender: 'male' | 'female'
   age: number
   expression: Expression
