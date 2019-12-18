@@ -10,6 +10,7 @@ import { FaceAnalyticsManager } from './managers/FaceAnalyticsManager';
 import { createConnection } from 'typeorm';
 import { Photo } from './db/entities/Photo';
 import { Logger } from './utils/Logger';
+import { Filepath } from './models/Filepath';
 
 @Service(FaceAnalyticsApplication.name)
 export class FaceAnalyticsApplication {
@@ -48,16 +49,19 @@ export class FaceAnalyticsApplication {
     Array
       .from({ length: threadCount }, (_, i) => this.tasksQueue(i + 1))
       .forEach(async it => {
-        let task: IteratorResult<string, string>;
+        let task: IteratorResult<Filepath, Filepath>;
 
         while (!(task = it.next()).done) {
           await Promisify.later(async () => {
-            const analysis = await this.faceAnalyticsManager.analyse(task.value);
+            const analysis = await this.faceAnalyticsManager.analyse(
+              task.value.path + '/' + task.value.filename
+            );
 
             if (analysis.length > 0) {
               const photoRepository = databaseConnection.getRepository(Photo);
               const photo = photoRepository.create({
-                filename: task.value,
+                filename: task.value.foldername + '/' + task.value.filename,
+                filepath: task.value.path + '/' + task.value.filename,
                 analysis: analysis.map(it => ({
                   gender: it.gender,
                   age: it.age,
@@ -81,7 +85,7 @@ export class FaceAnalyticsApplication {
       });
   }
 
-  private tasksQueue(thread: number): IterableIterator<string> {
+  private tasksQueue(thread: number): IterableIterator<Filepath> {
     const threadIdentificator = thread + '_';
     const datasetSize = Number(process.env.DATASET_THREAD_SIZE);
     return this.grabWorker.grab(this.fileGrabber.getURL(), datasetSize, threadIdentificator);

@@ -4,6 +4,7 @@ import Joi, { ValidationError } from 'joi';
 import { Logger } from '@/utils/Logger';
 import Exec from 'child_process';
 import { NamedValidateError } from '@/exceptions/NamedValidateError';
+import { Filepath } from '@/models/Filepath';
 
 @Service(GrabberWorkerImpl.name)
 export class GrabberWorkerImpl implements GrabberWorker {
@@ -17,7 +18,7 @@ export class GrabberWorkerImpl implements GrabberWorker {
       throw new NamedValidateError('USER_AGENT', errorMessage.message);
   }
 
-  *grab (url: URL, limit: number, threadIdentificator: string = '1_'): IterableIterator<string> {
+  *grab (url: URL, limit: number, threadIdentificator: string = '1_'): IterableIterator<Filepath> {
     const datasetFolderName = new Date().toLocaleDateString() + '-' + new Date().toLocaleTimeString();
     // create dataset folder
     this.createDatasetFolder(process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName);
@@ -28,7 +29,11 @@ export class GrabberWorkerImpl implements GrabberWorker {
         const filename = process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName + '/' + threadIdentificator + i + '.jpg';
         Exec.execSync(`curl -A ${process.env.USER_AGENT} ${url.href} --output ${filename}`);
 
-        yield filename;
+        yield {
+          path: process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName,
+          foldername: datasetFolderName,
+          filename: threadIdentificator + i + '.jpg'
+        };
       } catch (err) {
         Logger.error(GrabberWorkerImpl.name, err);
       }

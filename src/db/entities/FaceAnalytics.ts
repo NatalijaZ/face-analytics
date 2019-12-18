@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { Gender } from '@/models/Gender';
 import { Photo } from './Photo';
 
@@ -76,6 +76,16 @@ export class FaceAnalytics {
     default: 0
   })
   public expression_surprised!: number
+
+  @CreateDateColumn({
+    name: 'created_at'
+  })
+  public created_at!: Date
+
+  @UpdateDateColumn({
+    name: 'updated_at'
+  })
+  public updated_at!: Date
 
   @ManyToOne(() => Photo, photo => photo.analysis)
   public photo!: Photo

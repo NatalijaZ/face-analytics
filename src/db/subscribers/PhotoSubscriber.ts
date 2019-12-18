@@ -9,7 +9,7 @@ export class PhotoSubscriber implements EntitySubscriberInterface<Photo> {
 
   async afterRemove(event: RemoveEvent<Photo>) {
     try {
-      Exec.execSync(`rm -f ${event.databaseEntity.filename}`);
+      Exec.execSync(`rm -f ${event.databaseEntity.filepath}`);
     } catch (err) {
       Logger.error(PhotoSubscriber.name, err);
     }
