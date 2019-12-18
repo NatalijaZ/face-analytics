@@ -1,4 +1,4 @@
-# gan-face-analytics
+# face-analytics
 
 The project template for quick build TypeScript-runtime application
 

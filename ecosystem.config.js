@@ -1,10 +1,10 @@
 module.exports = {
   apps : [{
-    name: 'typescript-runtime-template',
+    name: 'face-analytics',
     script: 'src/App.ts',
     interpreter: 'node',
     interpreter_args: [
-      '-r', 'dotenv/config',
+      // '-r', 'dotenv/config',
       '-r', 'ts-node/register',
       '-r', 'tsconfig-paths/register'
     ],
