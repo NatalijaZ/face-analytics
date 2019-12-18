@@ -1,0 +1,27 @@
+[
+  {
+    "name": "default",
+    "type": "postgres",
+    "host": "db-host",
+    "port": 5432,
+    "username": "db-username",
+    "password": "db-password",
+    "database": "db-database",
+    "synchronize": true,
+    "logging": true,
+    "entities": [
+      "src/db/entities/**/*.ts"
+    ],
+    "subscribers": [
+      "src/db/subscribers/**/*.ts"
+    ],
+    "migrations": [
+      "src/db/migrations/**/*.ts"
+    ],
+    "cli": {
+      "entitiesDir": "src/db/entities",
+      "migrationsDir": "src/db/migrations",
+      "subscribersDir": "src/db/subscribers"
+    }
+  }
+]
