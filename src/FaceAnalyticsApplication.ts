@@ -7,6 +7,9 @@ import Joi, { ValidationError } from 'joi';
 import { Promisify } from './utils/Promisify';
 import { NamedValidateError } from './exceptions/NamedValidateError';
 import { FaceAnalyticsManager } from './managers/FaceAnalyticsManager';
+import { createConnection } from 'typeorm';
+import { Photo } from './db/entities/Photo';
+import { Logger } from './utils/Logger';
 
 @Service(FaceAnalyticsApplication.name)
 export class FaceAnalyticsApplication {
@@ -28,10 +31,16 @@ export class FaceAnalyticsApplication {
 
     if ((errorMessage = Joi.number().positive().validate(process.env.GRAB_TIMEOUT).error))
       throw new NamedValidateError('GRAB_TIMEOUT', errorMessage.message);
+
+    if ((errorMessage = Joi.string().validate(process.env.DB_CONNECTION).error))
+      throw new NamedValidateError('DB_CONNECTION', errorMessage.message);
   }
 
   public async start () {
-    await this.faceAnalyticsManager.prepare();
+    const [ , databaseConnection ] = await Promise.all([
+      this.faceAnalyticsManager.prepare(),
+      createConnection(process.env.DB_CONNECTION!)
+    ]);
 
     const grabTimeout = Number(process.env.GRAB_TIMEOUT);
     const threadCount = Number(process.env.THREAD_COUNT);
@@ -44,10 +53,31 @@ export class FaceAnalyticsApplication {
         while (!(task = it.next()).done) {
           await Promisify.later(async () => {
             const analysis = await this.faceAnalyticsManager.analyse(task.value);
-            console.log(analysis);
+
+            if (analysis.length > 0) {
+              const photoRepository = databaseConnection.getRepository(Photo);
+              const photo = photoRepository.create({
+                filename: task.value,
+                analysis: analysis.map(it => ({
+                  gender: it.gender,
+                  age: it.age,
+                  expression_neutral: it.expression.neutral,
+                  expression_happy: it.expression.happy,
+                  expression_sad: it.expression.sad,
+                  expression_angry: it.expression.angry,
+                  expression_fearful: it.expression.fearful,
+                  expression_disgusted: it.expression.disgusted,
+                  expression_surprised: it.expression.surprised
+                }))
+              });
+
+              photoRepository.save(photo);
+            } else {
+              Logger.error(FaceAnalyticsApplication.name, `faces not found on '${task.value}' image`);
+            }
           }, grabTimeout);
         }
-        
+
       });
   }
 
