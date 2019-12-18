@@ -1,4 +1,5 @@
 // import '@tensorflow/tfjs-node';
+import 'reflect-metadata';
 
 import Container from 'typedi';
 import { FaceAnalyticsApplication } from '@/FaceAnalyticsApplication';

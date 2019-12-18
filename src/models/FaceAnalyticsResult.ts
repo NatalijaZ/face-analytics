@@ -1,6 +1,8 @@
+import { Gender } from './Gender';
+
 export interface FaceAnalyticsResult {
   image: string
-  gender: 'male' | 'female'
+  gender: Gender
   age: number
   expression: Expression
 }
