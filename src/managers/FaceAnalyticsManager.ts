@@ -1,43 +1,46 @@
-import { Service } from 'typedi';
-import * as FaceAPI from 'face-api.js';
 import Joi, { ValidationError } from 'joi';
 import { NamedValidateError } from '@/exceptions/NamedValidateError';
 import { FaceAnalyticsResult } from '@/models/FaceAnalyticsResult';
+import { FaceApiResponse } from '@/models/FaceApiResponse';
+import { Service } from 'typedi';
+import { Gender } from '@/models/Gender';
+import Exec from 'child_process';
 
 @Service(FaceAnalyticsManager.name)
 export class FaceAnalyticsManager {
-  private canvas = require('canvas')
-  private faceDetectionNetwork = FaceAPI.nets.ssdMobilenetv1
-  private faceDetectionNetworkOptions = new FaceAPI.SsdMobilenetv1Options({ minConfidence: 0.5 })
-
   constructor () {
     let errorMessage: ValidationError | null = null;
 
-    if ((errorMessage = Joi.string().validate(process.env.WEIGHT_FOLDER).error))
-      throw new NamedValidateError('WEIGHT_FOLDER', errorMessage.message);
+    if ((errorMessage = Joi.string().uri().validate(process.env.FACE_API_URL).error))
+      throw new NamedValidateError('FACE_API_URL', errorMessage.message);
+
+    if ((errorMessage = Joi.string().validate(process.env.FACE_API_TOKEN).error))
+      throw new NamedValidateError('FACE_API_TOKEN', errorMessage.message);
   }
 
-  public async prepare() {
-    // prepare canvas for nodejs
-    const { Canvas, Image, ImageData } = this.canvas;
-    FaceAPI.env.monkeyPatch({ Canvas, Image, ImageData });
-    // load weights
-    await this.faceDetectionNetwork.loadFromDisk(process.env.WEIGHT_FOLDER);
-    await FaceAPI.nets.faceExpressionNet.loadFromDisk(process.env.WEIGHT_FOLDER);
-    await FaceAPI.nets.ageGenderNet.loadFromDisk(process.env.WEIGHT_FOLDER);
-  }
+  public async analyse(filepath: string): Promise<FaceAnalyticsResult[]> {
+    const curl = `
+      curl \
+        -X POST \
+        -H 'Content-Type: multipart/form-data' \
+        -F app_key=${process.env.FACE_API_TOKEN} \
+        -F img=@${filepath} \
+        ${process.env.FACE_API_URL}`;
 
-  public async analyse (filepath: string): Promise<FaceAnalyticsResult[]> {
-    const img = await this.canvas.loadImage(filepath);
-    const result = await FaceAPI.detectAllFaces(img, this.faceDetectionNetworkOptions)
-      .withAgeAndGender()
-      .withFaceExpressions();
+    const result: FaceApiResponse = JSON.parse(Exec.execSync(curl).toString());
 
-    return result.map(it => ({
+    if (!result.people)
+      // TODO
+      throw new Error('exec error');
+
+    if (result.people.length <= 0)
+      throw new Error('Faces not found on image');
+
+    return result.people.map(it => ({
       image: filepath,
-      gender: it.gender,
+      gender: it.gender > 0 ? Gender.FEMALE : Gender.MALE,
       age: it.age,
-      expression: it.expressions
+      emotions: it.emotions
     }));
   }
 }

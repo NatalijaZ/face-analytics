@@ -4,15 +4,14 @@ export interface FaceAnalyticsResult {
   image: string
   gender: Gender
   age: number
-  expression: Expression
+  emotions: Emotions
 }
 
-interface Expression {
-  neutral: number;
-  happy: number;
-  sad: number;
-  angry: number;
-  fearful: number;
-  disgusted: number;
-  surprised: number;
+interface Emotions {
+  sadness: number,
+  disgust: number,
+  anger: number,
+  surprise: number,
+  fear: number,
+  happiness: number
 }
