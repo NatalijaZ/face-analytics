@@ -1,4 +1,4 @@
 export interface FileGrabber {
-  getURL(): URL
-  getPath(): string
+  getURL (): URL
+  getPath (): IterableIterator<string>
 }

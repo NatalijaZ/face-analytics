@@ -5,6 +5,7 @@ import { NamedValidateError } from '@/exceptions/NamedValidateError';
 
 @Service(ThisPersonDoesNotExistFileUrlGenerator.name)
 export class ThisPersonDoesNotExistFileUrlGenerator implements FileGrabber {
+  private path = this.getPath()
   constructor () {
     let errorMessage: ValidationError | null = null;
 
@@ -12,10 +13,12 @@ export class ThisPersonDoesNotExistFileUrlGenerator implements FileGrabber {
       throw new NamedValidateError('BASE_SOURCE_LINK', errorMessage.message);
   }
   getURL (): URL {
-    return new URL(process.env.BASE_SOURCE_LINK + this.getPath());
+    return new URL(process.env.BASE_SOURCE_LINK! + this.path.next().value);
   }
 
-  getPath (): string {
-    return '/image';
+  *getPath (): IterableIterator<string> {
+    while (true) {
+      yield '/image';
+    }
   }
 }
