@@ -29,53 +29,46 @@ export class FaceAnalytics {
   public age!: number
 
   @Column({
-    name: 'expression_neutral',
+    name: 'expression_sadness',
     type: 'real',
     default: 0
   })
-  public expression_neutral!: number
+  public expression_sadness!: number
 
   @Column({
-    name: 'expression_happy',
+    name: 'expression_disgust',
     type: 'real',
     default: 0
   })
-  public expression_happy!: number
+  public expression_disgust!: number
 
   @Column({
-    name: 'expression_sad',
+    name: 'expression_anger',
     type: 'real',
     default: 0
   })
-  public expression_sad!: number
+  public expression_anger!: number
 
   @Column({
-    name: 'expression_angry',
+    name: 'expression_surprise',
     type: 'real',
     default: 0
   })
-  public expression_angry!: number
+  public expression_surprise!: number
 
   @Column({
-    name: 'expression_fearful',
+    name: 'expression_fear',
     type: 'real',
     default: 0
   })
-  public expression_fearful!: number
+  public expression_fear!: number
 
   @Column({
-    name: 'expression_disgusted',
+    name: 'expression_happiness',
     type: 'real',
     default: 0
   })
-  public expression_disgusted!: number
-
-  @Column({
-    name: 'expression_surprised',
-    type: 'real',
-    default: 0
-  })
-  public expression_surprised!: number
+  public expression_happiness!: number
 
   @CreateDateColumn({
     name: 'created_at'

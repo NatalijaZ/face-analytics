@@ -38,10 +38,7 @@ export class FaceAnalyticsApplication {
   }
 
   public async start () {
-    const [ , databaseConnection ] = await Promise.all([
-      this.faceAnalyticsManager.prepare(),
-      createConnection(process.env.DB_CONNECTION!)
-    ]);
+    const databaseConnection = await createConnection(process.env.DB_CONNECTION!);
 
     const grabTimeout = Number(process.env.GRAB_TIMEOUT);
     const threadCount = Number(process.env.THREAD_COUNT);
@@ -65,13 +62,12 @@ export class FaceAnalyticsApplication {
                 analysis: analysis.map(it => ({
                   gender: it.gender,
                   age: it.age,
-                  expression_neutral: it.expression.neutral,
-                  expression_happy: it.expression.happy,
-                  expression_sad: it.expression.sad,
-                  expression_angry: it.expression.angry,
-                  expression_fearful: it.expression.fearful,
-                  expression_disgusted: it.expression.disgusted,
-                  expression_surprised: it.expression.surprised
+                  expression_sadness: it.emotions.sadness,
+                  expression_disgust: it.emotions.disgust,
+                  expression_anger: it.emotions.anger,
+                  expression_surprise: it.emotions.surprise,
+                  expression_fear: it.emotions.fear,
+                  expression_happiness: it.emotions.happiness
                 }))
               });
 
@@ -85,7 +81,7 @@ export class FaceAnalyticsApplication {
       });
   }
 
-  private tasksQueue(thread: number): IterableIterator<Filepath> {
+  private tasksQueue (thread: number): IterableIterator<Filepath> {
     const threadIdentificator = thread + '_';
     const datasetSize = Number(process.env.DATASET_THREAD_SIZE);
     return this.grabWorker.grab(this.fileGrabber.getURL(), datasetSize, threadIdentificator);
