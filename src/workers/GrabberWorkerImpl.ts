@@ -19,7 +19,7 @@ export class GrabberWorkerImpl implements GrabberWorker {
   }
 
   *grab (url: URL, limit: number, threadIdentificator: string = '1_'): IterableIterator<Filepath> {
-    const datasetFolderName = new Date().toLocaleDateString() + '-' + new Date().toLocaleTimeString();
+    const datasetFolderName = new Date().toLocaleDateString('ru') + '-' + new Date().toLocaleTimeString('ru');
     // create dataset folder
     this.createDatasetFolder(process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName);
 
