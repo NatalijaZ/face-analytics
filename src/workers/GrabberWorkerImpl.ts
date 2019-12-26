@@ -18,25 +18,22 @@ export class GrabberWorkerImpl implements GrabberWorker {
       throw new NamedValidateError('USER_AGENT', errorMessage.message);
   }
 
-  *grab (url: URL, limit: number, threadIdentificator: string = '1_'): IterableIterator<Filepath> {
+  *grab (url: URL, limit: number,  threadIdentificator: string = '1_'): IterableIterator<Filepath> {
     const datasetFolderName = new Date().toLocaleDateString('ru') + '-' + new Date().toLocaleTimeString('ru');
     // create dataset folder
     this.createDatasetFolder(process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName);
 
-    // download dataset
-    for (let i = 0; i < limit; i++) {
-      try {
-        const filename = process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName + '/' + threadIdentificator + i + '.jpg';
-        Exec.execSync(`curl -A ${process.env.USER_AGENT} ${url.href} --output ${filename}`);
+    try {
+      const filename = process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName + '/' + threadIdentificator + i + '.jpg';
+      Exec.execSync(`curl -A ${process.env.USER_AGENT} ${url.href} --output ${filename}`);
 
-        yield {
-          path: process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName,
-          foldername: datasetFolderName,
-          filename: threadIdentificator + i + '.jpg'
-        };
-      } catch (err) {
-        Logger.error(GrabberWorkerImpl.name, err);
-      }
+      yield {
+        path: process.env.DATASET_ROOT_FOLDER + '/' + datasetFolderName,
+        foldername: datasetFolderName,
+        filename: threadIdentificator + i + '.jpg'
+      };
+    } catch (err) {
+      Logger.error(GrabberWorkerImpl.name, err);
     }
   }
 
